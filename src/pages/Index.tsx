@@ -105,7 +105,7 @@ const Index = () => {
                 </Button>
               </Link>
               <a href="tel:9733424134">
-                <Button size="lg" variant="outline" className="border-silver/30 text-white font-heading uppercase tracking-wider text-lg px-8 py-6 hover:bg-white/10 hover:border-primary">
+                <Button size="lg" variant="outline" className="border-silver/30 text-white font-heading uppercase tracking-wider text-lg px-8 py-6 bg-white/10 hover:border-primary">
                   <Phone className="w-5 h-5 mr-2" /> Call 973-342-4134
                 </Button>
               </a>
@@ -298,7 +298,7 @@ const Index = () => {
                 </Button>
               </Link>
               <a href="tel:9733424134">
-                <Button size="lg" variant="outline" className="border-silver/30 text-white font-heading uppercase tracking-wider text-lg px-10 py-6 hover:bg-white/10">
+                <Button size="lg" variant="outline" className="border-silver/30 text-white font-heading uppercase tracking-wider text-lg px-10 py-6 bg-white/10">
                   <Phone className="w-5 h-5 mr-2" /> 973-342-4134
                 </Button>
               </a>

@@ -1,15 +1,21 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const navLinks = [
+const mainNavLinks = [
   { label: "Home", path: "/" },
+  { label: "About", path: "/about" },
+];
+
+const serviceLinks = [
   { label: "Roofing", path: "/roofing" },
   { label: "Commercial", path: "/commercial-roofing" },
   { label: "Remodeling", path: "/remodeling" },
-  { label: "About", path: "/about" },
+];
+
+const extraNavLinks = [
   { label: "Service Areas", path: "/service-areas" },
   { label: "Gallery", path: "/gallery" },
   { label: "Contact", path: "/contact" },
@@ -17,7 +23,22 @@ const navLinks = [
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const location = useLocation();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const isServiceActive = serviceLinks.some((s) => location.pathname === s.path);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setServicesOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-navy/95 backdrop-blur-md border-b border-steel/50">
@@ -35,7 +56,55 @@ const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
+            {mainNavLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={cn(
+                  "px-3 py-2 text-sm font-medium uppercase tracking-wider transition-colors",
+                  location.pathname === link.path
+                    ? "text-primary"
+                    : "text-silver/80 hover:text-primary"
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            {/* Services Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setServicesOpen((prev) => !prev)}
+                className={cn(
+                  "flex items-center gap-1 px-3 py-2 text-sm font-medium uppercase tracking-wider transition-colors",
+                  isServiceActive ? "text-primary" : "text-silver/80 hover:text-primary"
+                )}
+              >
+                Services
+                <ChevronDown className={cn("w-4 h-4 transition-transform", servicesOpen && "rotate-180")} />
+              </button>
+              {servicesOpen && (
+                <div className="absolute top-full left-0 mt-1 w-44 bg-navy border border-steel/40 rounded-md shadow-lg overflow-hidden animate-fade-in">
+                  {serviceLinks.map((link) => (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      onClick={() => setServicesOpen(false)}
+                      className={cn(
+                        "block px-4 py-2.5 text-sm font-medium uppercase tracking-wider transition-colors",
+                        location.pathname === link.path
+                          ? "text-primary bg-steel/20"
+                          : "text-silver/80 hover:text-primary hover:bg-steel/10"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {extraNavLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -77,7 +146,7 @@ const Header = () => {
         {/* Mobile Nav */}
         {isOpen && (
           <nav className="lg:hidden pb-6 border-t border-steel/30 pt-4 animate-fade-in">
-            {navLinks.map((link) => (
+            {mainNavLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -92,6 +161,54 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
+
+            {/* Mobile Services Accordion */}
+            <button
+              onClick={() => setMobileServicesOpen((prev) => !prev)}
+              className={cn(
+                "w-full flex items-center justify-between px-4 py-3 text-sm font-medium uppercase tracking-wider transition-colors",
+                isServiceActive ? "text-primary" : "text-silver/80 hover:text-primary"
+              )}
+            >
+              Services
+              <ChevronDown className={cn("w-4 h-4 transition-transform", mobileServicesOpen && "rotate-180")} />
+            </button>
+            {mobileServicesOpen && (
+              <div className="pl-4 border-l border-steel/30 ml-4">
+                {serviceLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => { setIsOpen(false); setMobileServicesOpen(false); }}
+                    className={cn(
+                      "block px-4 py-2.5 text-sm font-medium uppercase tracking-wider transition-colors",
+                      location.pathname === link.path
+                        ? "text-primary"
+                        : "text-silver/80 hover:text-primary"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {extraNavLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setIsOpen(false)}
+                className={cn(
+                  "block px-4 py-3 text-sm font-medium uppercase tracking-wider transition-colors",
+                  location.pathname === link.path
+                    ? "text-primary"
+                    : "text-silver/80 hover:text-primary"
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+
             <div className="px-4 pt-4">
               <Link to="/contact" onClick={() => setIsOpen(false)}>
                 <Button className="w-full bg-primary text-navy font-heading uppercase tracking-wider">
